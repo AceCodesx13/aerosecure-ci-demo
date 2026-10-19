@@ -1,0 +1,4 @@
+scenario_id,aircraft_part_id,scenario_date,replacement_interval_hours,hours_since_replacement,projected_daily_flight_hours,conservative_lead_time_days,buffer_days,policy_decision,expected_need_date,expected_latest_order_date,expected_result
+M-01,AC-01-PC-02,2026-10-12,1000,700,5,20,5,Allowed,2026-12-11,2026-11-16,Recommend
+M-02,AC-02-PC-03,2026-10-12,1000,990,5,20,5,Allowed,2026-10-14,2026-09-19,Escalate
+M-03,AC-03-PC-04,2026-10-12,1000,700,5,20,5,Blocked,2026-12-11,2026-11-16,Blocked

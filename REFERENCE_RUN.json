@@ -1,0 +1,79 @@
+{
+  "purpose": "Instructor reference run; not a required student acceptance threshold",
+  "dataset_version": "1.0.0",
+  "seed": 20261012,
+  "versions": {
+    "python": "3.12.14",
+    "sklearn": "1.5.2",
+    "numpy": "1.26.4",
+    "pandas": "2.2.3"
+  },
+  "parameters": {
+    "trees": 120,
+    "max_depth": 18,
+    "min_samples_leaf": 3,
+    "seed": 20261012
+  },
+  "validation": {
+    "quoted_baseline": {
+      "mae_days": 6.559,
+      "rmse_days": 8.668,
+      "underestimate_rate": 0.6488
+    },
+    "historical_median_baseline": {
+      "mae_days": 14.975,
+      "rmse_days": 22.039,
+      "underestimate_rate": 0.3994
+    },
+    "model": {
+      "mae_days": 5.244,
+      "rmse_days": 7.118,
+      "underestimate_rate": 0.3969
+    },
+    "validation_coverage": 0.9004
+  },
+  "test": {
+    "evaluation_split": "test",
+    "row_count": 3749,
+    "quoted_baseline": {
+      "mae_days": 7.113,
+      "rmse_days": 9.498,
+      "underestimate_rate": 0.6631
+    },
+    "historical_median_baseline": {
+      "mae_days": 16.542,
+      "rmse_days": 23.021,
+      "underestimate_rate": 0.5087
+    },
+    "model": {
+      "mae_days": 5.81,
+      "rmse_days": 7.957,
+      "underestimate_rate": 0.4548
+    },
+    "conservative_coverage": 0.8789,
+    "mean_conservative_excess_days": 8.604,
+    "note": "Coverage is measured on synthetic examples, not a real-world guarantee.",
+    "by_part_group": {
+      "Consumable": {
+        "rows": 1508,
+        "mae_days": 4.332,
+        "rmse_days": 6.184,
+        "underestimate_rate": 0.4058
+      },
+      "Repairable": {
+        "rows": 1496,
+        "mae_days": 6.688,
+        "rmse_days": 8.748,
+        "underestimate_rate": 0.486
+      },
+      "Major": {
+        "rows": 745,
+        "mae_days": 7.037,
+        "rmse_days": 9.355,
+        "underestimate_rate": 0.4913
+      }
+    }
+  },
+  "live_aws_job_run": false,
+  "docker_image_built": false
+}

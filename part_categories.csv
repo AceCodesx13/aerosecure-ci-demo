@@ -1,0 +1,21 @@
+part_category_id,part_category,part_group,simulated_base_days,allowed_conditions
+PC-01,Engine oil filter,Consumable,5,New
+PC-02,Hydraulic filter,Consumable,6,New
+PC-03,Fuel filter,Consumable,6,New
+PC-04,Main wheel tire,Consumable,9,New
+PC-05,Nose wheel tire,Consumable,8,New
+PC-06,Brake friction element,Consumable,12,New
+PC-07,Hydraulic seal kit,Consumable,5,New
+PC-08,O-ring kit,Consumable,4,New
+PC-09,Wheel bearing,Repairable,12,New;Repaired;Overhauled
+PC-10,Hydraulic pressure sensor,Repairable,16,New;Repaired;Overhauled
+PC-11,Temperature sensor,Repairable,14,New;Repaired;Overhauled
+PC-12,Fuel quantity sensor,Repairable,18,New;Repaired;Overhauled
+PC-13,Hydraulic control valve,Repairable,22,New;Repaired;Overhauled
+PC-14,Fuel pump,Repairable,24,New;Repaired;Overhauled
+PC-15,Hydraulic pump,Repairable,26,New;Repaired;Overhauled
+PC-16,Navigation light assembly,Repairable,12,New;Repaired;Overhauled
+PC-17,Engine assembly,Major,85,New;Repaired;Overhauled
+PC-18,Landing-gear assembly,Major,70,New;Repaired;Overhauled
+PC-19,Environmental control unit,Major,55,New;Repaired;Overhauled
+PC-20,Flight-control actuator assembly,Major,45,New;Repaired;Overhauled

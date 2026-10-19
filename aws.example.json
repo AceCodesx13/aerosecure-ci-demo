@@ -1,0 +1,11 @@
+{
+  "region": "REPLACE_WITH_APPROVED_REGION",
+  "expected_account_id": "REPLACE_WITH_12_DIGIT_ACCOUNT_ID",
+  "bucket": "REPLACE_WITH_PRIVATE_BUCKET_NAME",
+  "prefix": "capstone/v1/REPLACE_WITH_TEAM_ID",
+  "execution_role_arn": "REPLACE_WITH_SAGEMAKER_EXECUTION_ROLE_ARN",
+  "training_image_uri": "REPLACE_WITH_APPROVED_ECR_IMAGE_URI_WITH_SHA256_DIGEST",
+  "instance_type": "ml.m5.large",
+  "max_runtime_seconds": 1800,
+  "volume_size_gb": 10
+}

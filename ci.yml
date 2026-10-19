@@ -1,0 +1,112 @@
+# CI pipeline for the AeroSecure AI capstone starter.
+# Runs on every push and on PRs into main, so each person's branch gets
+# checked the same way before it gets merged.
+#
+# Jobs:
+#   1. checks       - data validation (hashes, splits) + unit tests
+#   2. smoke-train  - quick training run on the smoke split + quality gate
+#   3. docker       - builds the SageMaker training image and runs it locally
+#                     with the same /opt/ml paths SageMaker uses
+
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# if someone pushes twice quickly, cancel the older run on that branch
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Validate data + unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"   # the starter README pins 3.12
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Validate release data
+        # fails if any supplied CSV was edited (SHA-256 check) or the splits leak
+        run: python src/validate_data.py
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+
+  smoke-train:
+    name: Smoke training + quality gate
+    needs: checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Train on smoke split
+        # small split + fewer trees so this takes seconds, not minutes.
+        # only train + validation are used, the test split is never touched.
+        run: >
+          python src/train.py
+          --train data/smoke/train/train.csv
+          --validation data/smoke/validation/validation.csv
+          --model-dir artifacts/model
+          --reports-dir artifacts/reports
+          --trees 60
+
+      - name: Quality gate (model must beat both baselines)
+        run: python .github/scripts/quality_gate.py artifacts/reports/validation_metrics.json
+
+      - name: Upload metrics + model
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-training-${{ github.sha }}
+          path: artifacts/
+          retention-days: 14
+
+  docker:
+    name: Build + run training container
+    needs: checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        # build context is the repo root because the Dockerfile copies
+        # requirements.txt and src/ from there
+        run: docker build -f aws/Dockerfile -t aerosecure-train:ci .
+
+      - name: Run container like SageMaker would
+        # mount the smoke data at the same /opt/ml/input/data/<channel> paths
+        # the image expects, then check it actually produced a model
+        run: |
+          mkdir -p out/model out/data
+          docker run --rm \
+            -v "$PWD/data/smoke/train:/opt/ml/input/data/train:ro" \
+            -v "$PWD/data/smoke/validation:/opt/ml/input/data/validation:ro" \
+            -v "$PWD/out/model:/opt/ml/model" \
+            -v "$PWD/out/data:/opt/ml/output/data" \
+            aerosecure-train:ci --trees 30
+          test -s out/model/model.joblib
+          test -s out/data/validation_metrics.json
+          echo "Container produced model.joblib and validation_metrics.json"

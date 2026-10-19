@@ -1,0 +1,10 @@
+shipment_restriction_classification,destination_region_id,destination_eligible,requirement
+Unrestricted,REG-A,True,None
+Unrestricted,REG-B,True,None
+Unrestricted,REG-C,True,None
+Restricted,REG-A,True,Valid authorization
+Restricted,REG-B,True,Valid authorization
+Restricted,REG-C,True,Valid authorization
+Highly Restricted,REG-A,True,Human review and approval
+Highly Restricted,REG-B,True,Human review and approval
+Highly Restricted,REG-C,False,Human review and approval

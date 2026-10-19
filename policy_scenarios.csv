@@ -1,0 +1,10 @@
+scenario_id,shipment_restriction_classification,destination_region_id,authorization_status,expected_decision
+SC-01,Unrestricted,REG-A,Not required,Allowed
+SC-02,Restricted,REG-B,Valid,Allowed
+SC-03,Restricted,REG-A,Missing,Review required
+SC-04,Restricted,REG-A,Expired,Review required
+SC-05,Highly Restricted,REG-B,Approved after review,Allowed
+SC-06,Highly Restricted,REG-C,Approved after review,Blocked
+SC-07,Highly Restricted,REG-A,Valid,Review required
+SC-08,Unknown,REG-A,Missing,Review required
+SC-09,Unrestricted,UNKNOWN,Not required,Review required

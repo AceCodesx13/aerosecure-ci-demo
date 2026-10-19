@@ -1,0 +1,21 @@
+aircraft_model_id,manufacturer,model,aircraft_category,compatibility_scope
+AC-01,Airbus,A220-100,Small single-aisle jet,Illustrative classroom associations only
+AC-02,Airbus,A220-300,Small single-aisle jet,Illustrative classroom associations only
+AC-03,Airbus,A320neo,Single-aisle jet,Illustrative classroom associations only
+AC-04,Airbus,A321neo,Single-aisle jet,Illustrative classroom associations only
+AC-05,Airbus,A330-900,Widebody jet,Illustrative classroom associations only
+AC-06,Airbus,A350-900,Widebody jet,Illustrative classroom associations only
+AC-07,Boeing,737-800,Single-aisle jet,Illustrative classroom associations only
+AC-08,Boeing,737-8,Single-aisle jet,Illustrative classroom associations only
+AC-09,Boeing,777-300ER,Widebody jet,Illustrative classroom associations only
+AC-10,Boeing,787-8,Widebody jet,Illustrative classroom associations only
+AC-11,Boeing,787-9,Widebody jet,Illustrative classroom associations only
+AC-12,Embraer,E170,Regional jet,Illustrative classroom associations only
+AC-13,Embraer,E175,Regional jet,Illustrative classroom associations only
+AC-14,Embraer,E190,Regional jet,Illustrative classroom associations only
+AC-15,Embraer,E195-E2,Regional jet,Illustrative classroom associations only
+AC-16,ATR,ATR 42-600,Regional turboprop,Illustrative classroom associations only
+AC-17,ATR,ATR 72-600,Regional turboprop,Illustrative classroom associations only
+AC-18,De Havilland Canada,Dash 8-100,Regional turboprop,Illustrative classroom associations only
+AC-19,De Havilland Canada,Dash 8-300,Regional turboprop,Illustrative classroom associations only
+AC-20,De Havilland Canada,Dash 8-400,Regional turboprop,Illustrative classroom associations only

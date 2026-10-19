@@ -1,0 +1,10 @@
+supplier_id,name,origin_region_id,specialty_group,simulated_handling_days,simulated_replenishment_factor
+SUP-A,Aster Consumables,REG-A,Consumable,2,0.7
+SUP-B,Beacon Wheels and Brakes,REG-B,Consumable,5,1.1
+SUP-C,Cedar Component Repair,REG-A,Repairable,7,1.0
+SUP-D,Delta Assembly Services,REG-C,Major,10,1.3
+SUP-E,Evergreen Engine Services,REG-B,Major,8,1.1
+SUP-F,Falcon Consumables,REG-C,Consumable,4,0.9
+SUP-G,Granite Components,REG-B,Repairable,5,0.9
+SUP-H,Harbor Assembly Repair,REG-A,Major,7,1.0
+SUP-I,Indigo Components,REG-C,Repairable,9,1.2

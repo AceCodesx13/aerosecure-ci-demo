@@ -1,0 +1,49 @@
+{
+  "dataset_version": "1.0.0",
+  "prediction_target": "actual_delivery_days",
+  "target_definition": "Calendar days from supplier acceptance to full-quantity usable receipt",
+  "categorical_features": [
+    "aircraft_model_id",
+    "part_category_id",
+    "supplier_id",
+    "condition",
+    "origin_region_id",
+    "destination_region_id"
+  ],
+  "numeric_features": [
+    "quantity_ordered",
+    "stock_at_acceptance",
+    "supplier_backlog_days",
+    "quoted_lead_time_days",
+    "route_transit_days",
+    "route_customs_days",
+    "order_month"
+  ],
+  "prepared_columns": [
+    "order_id",
+    "accepted_date",
+    "aircraft_model_id",
+    "part_category_id",
+    "supplier_id",
+    "condition",
+    "origin_region_id",
+    "destination_region_id",
+    "quantity_ordered",
+    "stock_at_acceptance",
+    "supplier_backlog_days",
+    "quoted_lead_time_days",
+    "route_transit_days",
+    "route_customs_days",
+    "order_month",
+    "actual_delivery_days"
+  ],
+  "restriction_labels": [
+    "Unrestricted",
+    "Restricted",
+    "Highly Restricted"
+  ],
+  "policy_metadata_is_model_input": false,
+  "dates": "ISO YYYY-MM-DD",
+  "quantity_unit": "individual units",
+  "source_type": "Synthetic"
+}
