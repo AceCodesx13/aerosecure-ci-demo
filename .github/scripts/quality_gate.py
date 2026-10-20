@@ -1,67 +1,50 @@
-"""Quality gate for the smoke training run.
-
-Reads the validation_metrics.json that src/train.py writes and fails the
-CI job if the model does not beat BOTH baselines on validation MAE.
-Also writes a small markdown table to the GitHub job summary so you can
-see the numbers without opening the logs.
-
-Usage: python .github/scripts/quality_gate.py <path/to/validation_metrics.json>
-"""
 import json
 import os
 import sys
-from pathlib import Path
 
+# checks the metrics from train.py and fails the build if the model
+# doesnt beat both baselines
+# run: python .github/scripts/quality_gate.py artifacts/reports/validation_metrics.json
 
-def main():
-    if len(sys.argv) != 2:
-        print("usage: quality_gate.py <validation_metrics.json>")
-        return 2
+if len(sys.argv) < 2:
+    print("need the path to validation_metrics.json")
+    sys.exit(2)
 
-    report = json.loads(Path(sys.argv[1]).read_text())
+with open(sys.argv[1]) as f:
+    report = json.load(f)
 
-    # the gate should only ever look at validation, never the test split
-    if report.get("evaluation_split") != "validation":
-        print("FAIL: metrics are not from the validation split")
-        return 1
+# make sure we never gate on the test split by accident
+if report["evaluation_split"] != "validation":
+    print("FAIL: metrics are not from the validation split")
+    sys.exit(1)
 
-    model = report["model"]["mae_days"]
-    quoted = report["quoted_baseline"]["mae_days"]
-    median = report["historical_median_baseline"]["mae_days"]
+model = report["model"]
+quoted = report["quoted_baseline"]
+median = report["historical_median_baseline"]
 
-    rows = [
-        ("Model (random forest)", report["model"]),
-        ("Quoted lead time baseline", report["quoted_baseline"]),
-        ("Historical median baseline", report["historical_median_baseline"]),
-    ]
-    beats_both = model < quoted and model < median
+passed = model["mae_days"] < quoted["mae_days"] and model["mae_days"] < median["mae_days"]
 
-    lines = [
-        "## Smoke training results (validation split)",
-        "",
-        "| Predictor | MAE (days) | RMSE (days) | Underestimate rate |",
-        "|---|---|---|---|",
-    ]
-    for name, m in rows:
-        lines.append(f"| {name} | {m['mae_days']} | {m['rmse_days']} | {m['underestimate_rate']} |")
-    lines += [
-        "",
-        f"Rows: {report['row_count']} | Trees: {report['parameters']['trees']} | "
-        f"Python {report['versions']['python']} | scikit-learn {report['versions']['sklearn']}",
-        "",
-        "**Gate: PASS** - model beats both baselines" if beats_both
-        else "**Gate: FAIL** - model does not beat both baselines",
-    ]
-    summary = "\n".join(lines)
-    print(summary)
+# markdown table so the results show up on the actions page
+out = "## Smoke training results (validation split)\n\n"
+out += "| Predictor | MAE (days) | RMSE (days) | Underestimate rate |\n"
+out += "|---|---|---|---|\n"
 
-    summary_file = os.environ.get("GITHUB_STEP_SUMMARY")
-    if summary_file:
-        with open(summary_file, "a") as f:
-            f.write(summary + "\n")
+for name, m in [("Model (random forest)", model), ("Quoted lead time baseline", quoted), ("Historical median baseline", median)]:
+    out += f"| {name} | {m['mae_days']} | {m['rmse_days']} | {m['underestimate_rate']} |\n"
 
-    return 0 if beats_both else 1
+out += f"\nRows: {report['row_count']} | Trees: {report['parameters']['trees']} | Python {report['versions']['python']} | scikit-learn {report['versions']['sklearn']}\n\n"
 
+if passed:
+    out += "**Gate: PASS** - model beats both baselines"
+else:
+    out += "**Gate: FAIL** - model does not beat both baselines"
 
-if __name__ == "__main__":
-    sys.exit(main())
+print(out)
+
+# this env variable only exists when running on github, so skip it locally
+if "GITHUB_STEP_SUMMARY" in os.environ:
+    with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as f:
+        f.write(out + "\n")
+
+if not passed:
+    sys.exit(1)

@@ -1,13 +1,3 @@
-# CI pipeline for the AeroSecure AI capstone starter.
-# Runs on every push and on PRs into main, so each person's branch gets
-# checked the same way before it gets merged.
-#
-# Jobs:
-#   1. checks       - data validation (hashes, splits) + unit tests
-#   2. smoke-train  - quick training run on the smoke split + quality gate
-#   3. docker       - builds the SageMaker training image and runs it locally
-#                     with the same /opt/ml paths SageMaker uses
-
 name: CI
 
 on:
@@ -17,7 +7,7 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# if someone pushes twice quickly, cancel the older run on that branch
+# cancel the old run if i push again on the same branch
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -31,19 +21,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"   # the starter README pins 3.12
+          python-version: "3.12"  # starter says to use 3.12
           cache: pip
-
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # fails if someone edited the csvs (hash check) or the splits overlap
       - name: Validate release data
-        # fails if any supplied CSV was edited (SHA-256 check) or the splits leak
         run: python src/validate_data.py
-
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
 
@@ -53,29 +40,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
-
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # smoke split + 60 trees so it only takes a few secs
+      # only train/validation, never touch test
       - name: Train on smoke split
-        # small split + fewer trees so this takes seconds, not minutes.
-        # only train + validation are used, the test split is never touched.
-        run: >
-          python src/train.py
-          --train data/smoke/train/train.csv
-          --validation data/smoke/validation/validation.csv
-          --model-dir artifacts/model
-          --reports-dir artifacts/reports
-          --trees 60
+        run: python src/train.py --train data/smoke/train/train.csv --validation data/smoke/validation/validation.csv --model-dir artifacts/model --reports-dir artifacts/reports --trees 60
 
       - name: Quality gate (model must beat both baselines)
         run: python .github/scripts/quality_gate.py artifacts/reports/validation_metrics.json
 
+      # save the model + metrics so they can be downloaded from the run
       - name: Upload metrics + model
         if: always()
         uses: actions/upload-artifact@v4
@@ -91,14 +71,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # dockerfile is in aws/ but it copies from the root, so build from root with -f
       - name: Build image
-        # build context is the repo root because the Dockerfile copies
-        # requirements.txt and src/ from there
         run: docker build -f aws/Dockerfile -t aerosecure-train:ci .
 
+      # mount the data where sagemaker would put it (/opt/ml/...) and check we get a model out
       - name: Run container like SageMaker would
-        # mount the smoke data at the same /opt/ml/input/data/<channel> paths
-        # the image expects, then check it actually produced a model
         run: |
           mkdir -p out/model out/data
           docker run --rm \
@@ -109,4 +87,4 @@ jobs:
             aerosecure-train:ci --trees 30
           test -s out/model/model.joblib
           test -s out/data/validation_metrics.json
-          echo "Container produced model.joblib and validation_metrics.json"
+          echo "container worked, got model.joblib and validation_metrics.json"
